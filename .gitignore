@@ -9,6 +9,7 @@ yarn-error.log*
 playwright-report/
 test-results/
 .playwright/
+.playwright-mcp/
 
 # Editor / OS
 .DS_Store
