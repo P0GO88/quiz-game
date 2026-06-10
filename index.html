@@ -232,6 +232,7 @@
             box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
         }
 
+        .captcha-screen,
         .start-screen {
             display: none;
             flex-direction: column;
@@ -240,23 +241,37 @@
             text-align: center;
         }
 
+        .captcha-screen.active,
         .start-screen.active {
             display: flex;
         }
 
+        .captcha-screen h2,
         .start-screen h2 {
             color: #333;
             font-size: 1.5em;
             margin: 20px 0;
         }
 
+        .captcha-screen p,
         .start-screen p {
             color: #666;
             margin-bottom: 30px;
             font-size: 1.05em;
         }
 
-        .start-button {
+        .captcha-input {
+            width: 100%;
+            max-width: 260px;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 1em;
+            margin-bottom: 20px;
+            outline: none;
+        }
+
+        .captcha-button {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
@@ -266,12 +281,19 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: bold;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
+        .captcha-button:hover,
         .start-button:hover {
             transform: scale(1.05);
             box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .captcha-error {
+            color: #c62828;
+            margin-top: 10px;
+            font-weight: bold;
         }
 
         .emoji {
@@ -306,8 +328,19 @@
             <p>Test your animal knowledge with these tricky questions!</p>
         </div>
 
+        <!-- Captcha Screen -->
+        <div class="captcha-screen active">
+            <div class="emoji">🛡️</div>
+            <h2>Prove You’re Human</h2>
+            <p>Please solve the captcha below before starting the quiz.</p>
+            <div id="captchaQuestion" class="question-text">What is 0 + 0?</div>
+            <input id="captchaAnswer" class="captcha-input" type="text" autocomplete="off" placeholder="Enter your answer" />
+            <button class="captcha-button" onclick="verifyCaptcha()">Verify</button>
+            <div id="captchaError" class="captcha-error"></div>
+        </div>
+
         <!-- Start Screen -->
-        <div class="start-screen active">
+        <div class="start-screen">
             <div class="emoji">🐾</div>
             <h2>Ready to Challenge Yourself?</h2>
             <p>You'll face 10 tough animal trivia questions. Pick the correct answer for each question. Can you get them all right?</p>

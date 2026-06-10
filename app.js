@@ -2,16 +2,57 @@ let currentQuestion = 0;
 let score = 0;
 let answered = false;
 let selectedAnswer = null;
+let captchaAnswer = null;
+let shuffledQuizData = [];
+
+function shuffleQuestions() {
+    shuffledQuizData = quizData.slice();
+    for (let i = shuffledQuizData.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledQuizData[i], shuffledQuizData[j]] = [shuffledQuizData[j], shuffledQuizData[i]];
+    }
+}
 
 function startQuiz() {
+    shuffleQuestions();
+    currentQuestion = 0;
+    score = 0;
     document.querySelector('.start-screen').classList.remove('active');
     document.querySelector('.quiz-container').classList.add('active');
     loadQuestion();
 }
 
+function generateCaptcha() {
+    const a = Math.floor(Math.random() * 9) + 1;
+    const b = Math.floor(Math.random() * 9) + 1;
+    captchaAnswer = a + b;
+    document.getElementById('captchaQuestion').textContent = `What is ${a} + ${b}?`;
+    document.getElementById('captchaAnswer').value = '';
+    document.getElementById('captchaError').textContent = '';
+}
+
+function verifyCaptcha() {
+    const answer = parseInt(document.getElementById('captchaAnswer').value, 10);
+
+    if (Number.isNaN(answer)) {
+        document.getElementById('captchaError').textContent = 'Please enter a valid number.';
+        return;
+    }
+
+    if (answer === captchaAnswer) {
+        document.querySelector('.captcha-screen').classList.remove('active');
+        document.querySelector('.start-screen').classList.add('active');
+    } else {
+        document.getElementById('captchaError').textContent = 'Captcha incorrect. Try a new challenge.';
+        generateCaptcha();
+    }
+}
+
+window.addEventListener('DOMContentLoaded', generateCaptcha);
+
 function loadQuestion() {
-    const question = quizData[currentQuestion];
-    document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of ${quizData.length}`;
+    const question = shuffledQuizData[currentQuestion];
+    document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of ${shuffledQuizData.length}`;
     document.getElementById('questionText').textContent = question.question;
     
     const optionsContainer = document.getElementById('optionsContainer');
@@ -37,7 +78,7 @@ function selectAnswer(index) {
 
     answered = true;
     selectedAnswer = index;
-    const question = quizData[currentQuestion];
+    const question = shuffledQuizData[currentQuestion];
     const options = document.querySelectorAll('.option');
     const isCorrect = checkAnswer(index, question);
 
@@ -80,7 +121,7 @@ function displayFeedback(isCorrect, question) {
 
 function nextQuestion() {
     currentQuestion++;
-    if (currentQuestion < quizData.length) {
+    if (currentQuestion < shuffledQuizData.length) {
         loadQuestion();
     } else {
         showResults();
@@ -91,10 +132,10 @@ function showResults() {
     document.querySelector('.quiz-container').classList.remove('active');
     document.querySelector('.results-container').classList.add('active');
     
-    document.getElementById('scoreDisplay').textContent = `${score}/${quizData.length}`;
+    document.getElementById('scoreDisplay').textContent = `${score}/${shuffledQuizData.length}`;
     
     let message = '';
-    const percentage = (score / quizData.length) * 100;
+    const percentage = (score / shuffledQuizData.length) * 100;
 
     if (percentage === 100) {
         message = "🌟 Perfect Score! You're an animal expert!";
@@ -121,7 +162,7 @@ function restartQuiz() {
 }
 
 function updateProgressBar() {
-    const progress = ((currentQuestion + 1) / quizData.length) * 100;
+    const progress = ((currentQuestion + 1) / shuffledQuizData.length) * 100;
     document.getElementById('progressFill').style.width = progress + '%';
 }
 
